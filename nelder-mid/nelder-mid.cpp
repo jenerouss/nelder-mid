@@ -2,6 +2,9 @@
 #include "random_generator.h"
 #include <vector>
 #include <fstream>
+//#include <typeinfo>
+#include <string>
+#include <ctime>
 using namespace std;
 double f(vector <double> x,double ny)
 {
@@ -24,7 +27,7 @@ double alg()
 	double nx = n + 1;
 	const double ny = 3;
 	bool vivod = true;
-	bool fullvivod = false;
+	bool fullvivod = true;
 	vector<double> nole;
 	vector<double> res;
 	vector<double> xl;
@@ -127,22 +130,58 @@ double alg()
 		xras.push_back(0);
 		nole.push_back(0);
 	}
+	ifstream number("launch.txt");
+	string bufff;
+	number >> bufff;
+	number.close();
+	ofstream results(bufff + ".txt");
+	int func = 0;
+	bool ok = false;
+	string vershini;
+	for (int i = 0; i < nx; i++)
+	{
+		vershini += "(";
+		for (int j = 0; j < ny; j++)
+		{
+			if (j == 0)
+				vershini += to_string(x[i][j]);
+			else
+			{
+				vershini += ";";
+				vershini += to_string(x[i][j]);
+			}
+		}
+		vershini += "),\t";
+		vershini += to_string(res[i]);
+		vershini += "\n";
+	}
+	vershini += "\n";
+	double start_time = clock();
 	while (o > E)
 	{
 		cout << "шаг: " << K << endl;
 		for (int i = 0; i < nx; i++)
 		{
 			for (int j = 0; j < ny; j++)
-				res[i] = f(x[i],ny);
+			{
+				res[i] = f(x[i], ny);
+				func++;
+			}
 		}
 		for (int i = 0; i < nx; i++)
 		{
 			if (i >= 1)
 			{
-				if (min(res[i], res[i - 1]) < f(xl,ny))
+				if (min(res[i], res[i - 1]) < f(xl, ny))
+				{
 					xl = x[i];
-				else if (max(res[i], res[i - 1]) > f(xh,ny))
+					func++;
+				}
+				else if (max(res[i], res[i - 1]) > f(xh, ny))
+				{
 					xh = x[i];
+					func++;
+				}
 			}
 			else
 			{
@@ -159,8 +198,11 @@ double alg()
 			xs = xh;
 		for (int i = 0; i < nx; i++)
 		{
-			if (res[i] > f(xl,ny) && res[i] < f(xh,ny) && res[i] > f(xs,ny))
+			if (res[i] > f(xl, ny) && res[i] < f(xh, ny) && res[i] > f(xs, ny))
+			{
 				xs = x[i];
+				func++;
+			}
 		}
 		if (fullvivod)
 		{
@@ -366,10 +408,37 @@ double alg()
 		}
 		ox = 0;
 		for (int i = 0; i < nx; i++)
+		{
 			ox += pow(f(x[i], ny) - f(xt, ny), 2);
+			func += 2;
+		}
 		o = pow((1 / (n + 1)) * ox, 0.5);
+		if (ok)
+		{
+			double trash = clock();
+			for (int i = 0; i < nx; i++)
+			{
+				vershini += "(";
+				for (int j = 0; j < ny; j++)
+				{
+					if (j == 0)
+						vershini += to_string(x[i][j]);
+					else
+					{
+						vershini += ";";
+						vershini += to_string(x[i][j]);
+					}
+				}
+				vershini += "),\t";
+				vershini += to_string(res[i]);
+				vershini += "\n";
+			}
+			vershini += "\n";
+			start_time = start_time - trash;
+		}
 		if (o <= E)
 		{
+			double end_time = clock();
 			cout << "o (" << o << ") <= E (" << E << "), следовательно в качестве приближенного\n" <<
 				"решения можно взять наилучшую точку текущего многогранника : ";
 			cout << " (";
@@ -380,7 +449,20 @@ double alg()
 				else
 					cout << ";" << xl[j];
 			}
-			cout << ")";
+			cout << ")\t = " << f(xl,ny) << "\n";
+			results << "Число вычислений значений целевой функции до остановки: " << func << "\n"
+				<< "Итоговое решение: (";
+			for (int j = 0; j < ny; j++)
+			{
+				if (j == 0)
+					results << xl[j];
+				else
+					results << ";" << xl[j];
+			}
+			results << ") = " << f(xl,ny) << "\n";
+			results << "Время работы алгоритма: " << ((end_time - start_time) / CLOCKS_PER_SEC) << " секунд.\n";
+			results << "История поиска:\n" << vershini;
+			results.close();
 			return o;
 		}
 		else
@@ -571,14 +653,17 @@ double alg()
 			cout << ")\n";
 			cout << "__________________________________________________________________________\n\n";
 		}
+		ok = true;
 		if (f(xotr,ny) <= f(xl,ny))
 		{
+			func += 2;
 			if (vivod)
 				cout << "1if" << endl;
 			for (int i = 0; i < ny; i++)
 				xras[i] = xt[i] + Y * (xotr[i] - xt[i]);
 			if (f(xras,ny) < f(xl,ny))
 			{
+				func += 2;
 				if (vivod)
 					cout << "1ifif" << endl;
 				for (int i = 0; i < nx; i++)
@@ -590,6 +675,7 @@ double alg()
 			}
 			else if (f(xras,ny) >= f(xl,ny))
 			{
+				func += 2;
 				if (vivod)
 					cout << "1elseif" << endl;
 				for (int i = 0; i < nx; i++)
@@ -602,6 +688,7 @@ double alg()
 		}
 		else if (f(xs,ny) < f(xotr,ny) && f(xotr,ny) <= f(xh,ny))
 		{
+			func += 4;
 			if (vivod)
 				cout << "2elseif" << endl;
 			for (int i = 0; i < ny; i++)
@@ -615,6 +702,7 @@ double alg()
 		}
 		else if (f(xl,ny) < f(xotr,ny) && f(xotr,ny) <= f(xs,ny))
 		{
+			func += 4;
 			if (vivod)
 				cout << "3elseif" << endl;
 			for (int i = 0; i < nx; i++)
@@ -626,6 +714,7 @@ double alg()
 		}
 		else if (f(xotr,ny) > f(xh,ny))
 		{
+			func += 2;
 			if (vivod)
 				cout << "4elseif" << endl;
 			for (int i = 0; i < nx; i++)
@@ -639,29 +728,41 @@ double alg()
 }
 void main()
 {
-	setlocale(0, "");
-	char buff[50];
-	ofstream launchnumber("launch.txt");
-	if (!launchnumber.is_open())
+	bool multiruns = true;
+	if (multiruns)
 	{
-		cout << "Ошибка открытия текстового файла launch.txt\n";
-		launchnumber.open("launch.txt");
-	}
-	else
-	{
-		launchnumber.close();
+		setlocale(0, "");
+		char buff[3];
 		ifstream launchnumber("launch.txt");
-		launchnumber.getline(buff,50);
+		if (!launchnumber.is_open())
+		{
+			cout << "Ошибка открытия текстового файла launch.txt\n";
+			ofstream launchnumbercreate("launch.txt");
+			launchnumbercreate.close();
+		}
+		launchnumber.getline(buff, 3);
+		launchnumber.close();
 		if (strlen(buff) < 1)
 		{
-			cout << strlen(buff) << "\t" << "Тексовой файл пуст\nЗаписываю 1 в текстовой файл\n";
-			launchnumber.close();
+			cout << "Тексовой файл пуст\nЗаписываю 1 в текстовой файл\n";
 			ofstream launchnumber("launch.txt");
 			launchnumber << "1";
 			launchnumber.close();
 		}
 		else
+		{
 			cout << "Запуск № " << buff << "\n";
+			alg();
+			int ibuff = stoi(buff);
+			//cout << "buff = " << buff << " типа: " << typeid(buff).name() << " ibuff = " << ibuff << " типа: " << typeid(ibuff).name() << "\n";
+			ibuff++;
+			if (ibuff > 40)
+				ibuff = 1;
+			ofstream launchnumber("launch.txt");
+			launchnumber << ibuff;
+			launchnumber.close();
+		}
 	}
-	alg();
+	if (!multiruns)
+		alg();
 }
