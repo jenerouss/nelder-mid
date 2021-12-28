@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include "random_generator.h"
 #include <vector>
+#include <fstream>
 using namespace std;
 double f(vector <double> x,double ny)
 {
@@ -638,5 +639,29 @@ double alg()
 }
 void main()
 {
+	setlocale(0, "");
+	char buff[50];
+	ofstream launchnumber("launch.txt");
+	if (!launchnumber.is_open())
+	{
+		cout << "Ошибка открытия текстового файла launch.txt\n";
+		launchnumber.open("launch.txt");
+	}
+	else
+	{
+		launchnumber.close();
+		ifstream launchnumber("launch.txt");
+		launchnumber.getline(buff,50);
+		if (strlen(buff) < 1)
+		{
+			cout << strlen(buff) << "\t" << "Тексовой файл пуст\nЗаписываю 1 в текстовой файл\n";
+			launchnumber.close();
+			ofstream launchnumber("launch.txt");
+			launchnumber << "1";
+			launchnumber.close();
+		}
+		else
+			cout << "Запуск № " << buff << "\n";
+	}
 	alg();
 }
