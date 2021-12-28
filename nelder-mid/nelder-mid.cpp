@@ -23,7 +23,7 @@ double alg()
 	double nx = n + 1;
 	const double ny = 3;
 	bool vivod = true;
-	bool fullvivod = true;
+	bool fullvivod = false;
 	vector<double> nole;
 	vector<double> res;
 	vector<double> xl;
