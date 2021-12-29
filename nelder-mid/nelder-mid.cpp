@@ -27,7 +27,7 @@ double alg()
 	double nx = n + 1;
 	const double ny = 3;
 	bool vivod = true;
-	bool fullvivod = true;
+	bool fullvivod = false;
 	vector<double> nole;
 	vector<double> res;
 	vector<double> xl;
@@ -415,7 +415,6 @@ double alg()
 		o = pow((1 / (n + 1)) * ox, 0.5);
 		if (ok)
 		{
-			double trash = clock();
 			for (int i = 0; i < nx; i++)
 			{
 				vershini += "(";
@@ -434,7 +433,6 @@ double alg()
 				vershini += "\n";
 			}
 			vershini += "\n";
-			start_time = start_time - trash;
 		}
 		if (o <= E)
 		{
