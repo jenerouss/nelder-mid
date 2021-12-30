@@ -23,9 +23,9 @@ double alg()
 	double A = 1, B = 0.5, Y = 2, E = 0.01, K = 1;
 	double ox = 0;
 	double o = E + 1;
-	double n = 2;
+	double n = 3;
 	double nx = n + 1;
-	const double ny = 3;
+	double ny = n;
 	bool vivod = true;
 	bool fullvivod = false;
 	vector<double> nole;
@@ -50,8 +50,23 @@ double alg()
 	x[0][0] = 2;
 	x[0][1] = 2;
 	x[0][2] = 2;
+
+	x[1][0] = 3;
+	x[1][1] = 2;
+	x[1][2] = 2;
+
+	x[2][0] = 2;
+	x[2][1] = 3;
+	x[2][2] = 2;
+
+	x[3][0] = 2;
+	x[3][1] = 2;
+	x[3][2] = 3;
 	res.push_back(f(x[0], ny));
-	for (int i = 1; i < nx; i++)
+	res.push_back(f(x[1], ny));
+	res.push_back(f(x[2], ny));
+	res.push_back(f(x[3], ny));
+	/*for (int i = 1; i < nx; i++)
 	{
 		for (int j = 0; j < ny; j++)
 		{
@@ -79,7 +94,7 @@ double alg()
 				}
 			}
 		}
-	}
+	}*/
 	for (int i = 1; i < nx; i++)
 	{
 		for (int j = 0; j < ny; j++)
