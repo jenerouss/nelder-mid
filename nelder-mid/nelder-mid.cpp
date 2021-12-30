@@ -1,10 +1,12 @@
-﻿#include <iostream>
+﻿#define _USE_MATH_DEFINES
+#include <iostream>
 #include "random_generator.h"
 #include <vector>
 #include <fstream>
 //#include <typeinfo>
 #include <string>
 #include <ctime>
+#include <cmath>
 using namespace std;
 double f(vector <double> x,double ny)
 {
@@ -13,7 +15,7 @@ double f(vector <double> x,double ny)
 	{
 		d.push_back(x[i]);
 	}
-	return (pow(d[0], 2) + pow(d[1], 2) + pow(d[2],2));
+	return (-20 * exp(-0.2*(sqrt(0.5*(pow(d[0],2)+pow(d[1],2))))) - exp(0.5*(cos(2* M_PI * d[0]) + cos(2 * M_PI * d[1]))) + M_E + 20);
 }
 double alg()
 {
@@ -23,7 +25,7 @@ double alg()
 	double A = 1, B = 0.5, Y = 2, E = 0.01, K = 1;
 	double ox = 0;
 	double o = E + 1;
-	double n = 3;
+	double n = 2;
 	double nx = n + 1;
 	double ny = n;
 	bool vivod = true;
@@ -40,41 +42,23 @@ double alg()
 	vector<vector<double>> x(nx);
 	for (auto& r : x)
 		r.resize(ny);
-	if (n > pow(ny, 5))
+	if (n > pow(ny, 11))
 	{
 	cout << "Внимание! Максимально возможное количество комбинаций различающихся вершин симплекса для " <<
-		n << " точек с " << ny << " вершинами: " << pow(ny, 5) << "\nКоличество точек изменено до максимально возможного значения.\n";
-	n = pow(ny, 5);
+		n << " точек с " << ny << " вершинами: " << pow(ny, 11) << "\nКоличество точек изменено до максимально возможного значения.\n";
+	n = pow(ny, 11);
 	nx = n + 1;
+	ny = n;
 	}
-	x[0][0] = 2;
-	x[0][1] = 2;
-	x[0][2] = 2;
-
-	x[1][0] = 3;
-	x[1][1] = 2;
-	x[1][2] = 2;
-
-	x[2][0] = 2;
-	x[2][1] = 3;
-	x[2][2] = 2;
-
-	x[3][0] = 2;
-	x[3][1] = 2;
-	x[3][2] = 3;
-	res.push_back(f(x[0], ny));
-	res.push_back(f(x[1], ny));
-	res.push_back(f(x[2], ny));
-	res.push_back(f(x[3], ny));
-	/*for (int i = 1; i < nx; i++)
+	for (int i = 0; i < nx; i++)
 	{
 		for (int j = 0; j < ny; j++)
 		{
-			x[i][j] = round(rand_uniform(-1, 3));
+			x[i][j] = round(rand_uniform(-5, 5));
 			if (x[i][j] == -0)
 				x[i][j] = 0;
 		}
-		res.push_back(f(x[i], ny));
+		res.push_back(0);
 	}
 	for (int i = 0; i < nx; i++)
 	{
@@ -94,8 +78,8 @@ double alg()
 				}
 			}
 		}
-	}*/
-	for (int i = 1; i < nx; i++)
+	}
+	for (int i = 0; i < nx; i++)
 	{
 		for (int j = 0; j < ny; j++)
 		{
